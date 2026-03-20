@@ -1,9 +1,0 @@
-{
-  "editor.detectIndentation": false,
-  "files.exclude": {
-    "**/__pycache__": true,
-    "**/.venv": true
-  },
-  "python.analysis.typeCheckingMode": "standard",
-  "editor.tabSize": 4,
-}
