@@ -11,6 +11,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "verbatimModuleSyntax": true,
+    "paths": {}
   },
   "include": ["src"],
   "exclude": ["node_modules"]

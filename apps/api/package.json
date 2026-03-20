@@ -2,6 +2,8 @@
   "name": "@bookscanner/api",
   "version": "0.0.1",
   "private": true,
+  "module": "src/app.ts",
+  "types": "dist/src/app.d.ts",
   "scripts": {
     "dev": "bun --watch src/app.ts",
     "build": "bun build src/app.ts --outdir dist --target bun",

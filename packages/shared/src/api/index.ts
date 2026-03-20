@@ -1,11 +1,9 @@
-import { treaty } from "@elysiajs/eden";
-import type { App } from "@bookscanner/api"
+import type { App } from "@bookscanner/api";
+import { treaty, type Treaty } from "@elysiajs/eden";
 
-export function createApiClient(
-  baseUrl: string,
-  options?: NonNullable<Parameters<typeof treaty<App>>[1]>,
-) {
+export type ApiClient = Treaty.Create<App>;
+type ApiClientOptions = NonNullable<Parameters<typeof treaty>[1]>;
+
+export function createApiClient(baseUrl: string, options?: ApiClientOptions): ApiClient {
   return treaty<App>(baseUrl, options);
 }
-
-export type ApiClient = ReturnType<typeof createApiClient>;

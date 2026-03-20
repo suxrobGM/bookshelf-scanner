@@ -6,6 +6,9 @@
     "dev": "bun --bun next dev --port 4002",
     "build": "bun --bun next build",
     "start": "bun --bun next start",
+    "typegen": "bun --bun next typegen",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "clean": "rm -rf .next .turbo"
   },
   "dependencies": {

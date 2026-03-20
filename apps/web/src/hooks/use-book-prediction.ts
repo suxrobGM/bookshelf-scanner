@@ -1,33 +1,38 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
-import type { Result } from "@bookscanner/shared";
+import { type Result } from "@bookscanner/shared";
+import { useRef, useState } from "react";
+import { client } from "@/lib/api";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+interface BookPredictionResult {
+  results: string[];
+  segmentedImage: string | null;
+  error: string;
+  isProcessing: boolean;
+  predict: (file: File) => Promise<void>;
+  cancel: () => void;
+}
 
-export function useBookPrediction() {
+export function useBookPrediction(): BookPredictionResult {
   const [results, setResults] = useState<string[]>([]);
   const [segmentedImage, setSegmentedImage] = useState<string | null>(null);
   const [error, setError] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
-  const predict = useCallback(async (file: File) => {
+  const predict = async (file: File) => {
     setIsProcessing(true);
     setResults([]);
     setSegmentedImage(null);
     setError("");
 
     abortRef.current = new AbortController();
-    const formData = new FormData();
-    formData.append("file", file);
 
     try {
-      const response = await fetch(`${API_URL}/api/predict`, {
-        method: "POST",
-        body: formData,
-        signal: abortRef.current.signal,
-      });
+      const { response } = await client.api.predict.post(
+        { file },
+        { fetch: { signal: abortRef.current.signal } },
+      );
 
       if (!response.ok) {
         setError(`Server error: ${response.statusText}`);
@@ -65,7 +70,7 @@ export function useBookPrediction() {
               setError(data.error);
             }
           } catch {
-            setError(`Error parsing response`);
+            setError("Error parsing response");
           }
         }
       }
@@ -79,12 +84,12 @@ export function useBookPrediction() {
       setIsProcessing(false);
       abortRef.current = null;
     }
-  }, []);
+  };
 
-  const cancel = useCallback(() => {
+  const cancel = () => {
     abortRef.current?.abort();
     abortRef.current = null;
-  }, []);
+  };
 
   return { results, segmentedImage, error, isProcessing, predict, cancel };
 }
