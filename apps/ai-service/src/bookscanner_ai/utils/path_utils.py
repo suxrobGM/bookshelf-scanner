@@ -17,22 +17,6 @@ def get_image_path(image_file: str) -> str:
     
     return image_path
 
-def get_model_path(model_file: str) -> str:
-    """
-    Get the full path of the model in the models directory.
-    Args:
-        model_file (str): The name of the model file including the extension.
-    Returns:
-        str: The full path of the model file.
-    Raises:
-        FileNotFoundError: If the model file is not found.
-    """
-    model_path = os.path.realpath(os.path.join(os.path.dirname(__file__), "../../../models", model_file))
-
-    if not os.path.exists(model_path):
-        raise FileNotFoundError(f"Model not found: {model_file}")
-    
-    return model_path
 
 def remove_files(dir_path: str) -> None:
     """

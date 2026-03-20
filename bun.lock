@@ -5,8 +5,8 @@
     "": {
       "name": "bookshelf-scanner",
       "devDependencies": {
-        "@bufbuild/buf": "^1.50.0",
-        "@bufbuild/protoc-gen-es": "^2.0.0",
+        "@bufbuild/buf": "^1.66.0",
+        "@bufbuild/protoc-gen-es": "^2.11.0",
         "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
         "concurrently": "^9.2.0",
         "prettier": "^3.8.1",
@@ -18,7 +18,7 @@
       "version": "0.0.1",
       "dependencies": {
         "@bookscanner/shared": "workspace:*",
-        "@bufbuild/protobuf": "^2.0.0",
+        "@bufbuild/protobuf": "^2.11.0",
         "@connectrpc/connect": "^2.1.0",
         "@connectrpc/connect-node": "^2.1.0",
         "@elysiajs/cors": "^1.4.1",
@@ -52,6 +52,7 @@
         "react-dom": "^19.2.0",
       },
       "devDependencies": {
+        "@types/node": "^25.5.0",
         "@types/react": "^19.2.0",
         "@types/react-dom": "^19.2.0",
         "babel-plugin-react-compiler": "^1.0.0",
