@@ -6,13 +6,14 @@ AI-powered book spine recognition app. Upload a bookshelf photo, get back segmen
 
 Bun monorepo with Turborepo orchestration:
 
-- **apps/web** — Next.js 16 (App Router) + MUI v7 + Emotion. Port 4002.
-- **apps/api** — Elysia.js gateway with tsyringe DI. Port 4000. Talks to AI service via Connect (gRPC-web).
-- **apps/ai-service** — Python gRPC server (YOLO 11x + OpenCV). Port 4001. Managed with PDM.
+- **llama-server** — Gemma 3 4B vision inference via llama.cpp CLI. Port 4000.
+- **apps/ai-service** — Python gRPC server (YOLO 26x + OpenCV). Port 4001. Managed with PDM. Calls llama-server for OCR. Models and dataset stored under `apps/ai-service/models/` and `apps/ai-service/dataset/`.
+- **apps/api** — Elysia.js gateway with tsyringe DI. Port 4002. Talks to AI service via Connect (gRPC-web).
+- **apps/web** — Next.js 16 (App Router) + MUI v7 + Emotion. Port 4003.
 - **packages/shared** — Eden Treaty API client factory + shared types.
 - **proto/** — Protobuf definitions. Generate with `bun run proto:generate` (Buf v2).
 
-Data flow: Web → POST multipart → API (Elysia) → Connect stream → AI Service → stream back as NDJSON.
+Data flow: Web (4003) → POST multipart → API (4002) → Connect stream → AI Service (4001) → llama-server (4000) → stream back as NDJSON.
 
 ## Commands
 
@@ -31,7 +32,8 @@ AI service (from `apps/ai-service/`):
 
 ```bash
 pdm install              # install Python deps
-pdm run serve            # start gRPC server
+pdm run llama-server     # start llama-server on port 4000
+pdm run serve            # start gRPC server on port 4001
 ```
 
 ## Code Style

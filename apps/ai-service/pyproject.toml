@@ -1,7 +1,7 @@
 [project]
 name = "bookscanner-ai-service"
 version = "0.1.0"
-description = "Bookshelf Scanner AI Service - YOLO segmentation + Moondream v3 recognition over gRPC"
+description = "Bookshelf Scanner AI Service - YOLO segmentation + Gemma 3 vision recognition over gRPC"
 authors = [
     { name = "Sukhrob Ilyosbekov", email = "suxrobgm@gmail.com" }
 ]
@@ -13,8 +13,8 @@ dependencies = [
     "ultralytics>=8.4.0",
     "opencv-contrib-python>=4.13.0.92",
     "huggingface-hub>=1.7.1",
-    "transformers>=4.52.0",
-    "accelerate>=1.13.0",
+    "httpx>=0.28.0",
+    "python-dotenv>=1.2.0",
 ]
 
 [project.optional-dependencies]
@@ -24,11 +24,11 @@ cu130 = ["torch>=2.10.0", "torchvision>=0.25.0"]
 dev = ["pytest>=9.0.0", "ruff>=0.15.0", "mypy>=1.19.0"]
 
 [tool.pdm.scripts]
-serve = { cmd = "python -m src.server", env = { PYTHONPATH = "src/generated" }, env_file = ".env" }
+serve = { cmd = "python -m src.server", env = { PYTHONPATH = "src/generated" } }
 proto = "python -m grpc_tools.protoc -I../../proto --python_out=src/generated --pyi_out=src/generated --grpc_python_out=src/generated ../../proto/bookscanner/v1/prediction.proto"
 install-pytorch-cpu = { shell = "pdm config pypi.pytorch.url https://download.pytorch.org/whl/cpu && pdm install -G cpu" }
-install-pytorch-cu128 = { shell = "pdm config pypi.pytorch.url https://download.pytorch.org/whl/cu128 && pdm install -G cu128" }
 install-pytorch-cu130 = { shell = "pdm config pypi.pytorch.url https://download.pytorch.org/whl/cu130 && pdm install -G cu130" }
+llama-server = { cmd = "./llama-cpp/llama-server.exe -hf ggml-org/gemma-3-4b-it-GGUF --gpu-layers -1 -c 4096 --port 4000", env = { LLAMA_CACHE = "./models" } }
 
 [tool.mypy]
 ignore_missing_imports = true

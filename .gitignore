@@ -159,18 +159,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# Ignore models, since they are too large to be stored in git
-models/*.pt
-models/*.gguf
-models/cache/
-ai/models/*.pt
-ai/models/cache/
-backend/models/*.pt
-backend/models/cache/
-
 # Ignore output directories
-ai/output/
-backend/output/
 apps/ai-service/output/
 
 # Node

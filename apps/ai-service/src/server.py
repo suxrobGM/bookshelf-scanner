@@ -1,13 +1,17 @@
 import logging
-
-import grpc
+import os
 from concurrent import futures
 
-from .logger import setup_logging
+import grpc
+from dotenv import load_dotenv  # noqa: E402
+
 from .generated.bookscanner.v1 import prediction_pb2_grpc
+from .logger import setup_logging
 from .servicer import PredictionServicer
 
-_PORT = 4001
+load_dotenv()
+
+_PORT = int(os.environ.get("PORT", "4001"))
 _MAX_MESSAGE_SIZE = 20 * 1024 * 1024  # 20MB
 
 setup_logging()

@@ -1,24 +1,31 @@
-import os
-import cv2
-import numpy as np
-import logging
 import asyncio
-import torch
-from ultralytics import YOLO
-from ultralytics.engine.results import Masks, Boxes
-from PIL import Image, ImageEnhance
-from transformers import AutoModelForCausalLM
-from typing import Generator, AsyncGenerator
-from torch import Tensor
-from .utils import scale_image, image_to_base64, remove_files
+import logging
+import os
+from typing import AsyncGenerator, Generator
 
-YOLO_MODEL = "yolo26x-seg.pt"
-MOONDREAM_MODEL_ID = "moondream/moondream3-preview"
+import cv2
+import httpx
+import numpy as np
+from dotenv import load_dotenv
+from PIL import Image, ImageEnhance
+from torch import Tensor
+from ultralytics import YOLO
+from ultralytics.engine.results import Boxes, Masks
+
+from .utils import image_to_base64, remove_files, scale_image
+
+load_dotenv()
+
+MODELS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "models"))
+YOLO_MODEL = os.path.join(MODELS_DIR, "yolo26x-seg.pt")
+
+LLAMA_SERVER_URL = os.environ.get("LLAMA_SERVER_URL", "http://localhost:4000")
 
 BOOK_RECOGNITION_PROMPT = (
-    "Recognize the title and author of this book in the format 'Title by Author'. "
-    "If there is no author, just the title is fine. "
-    "If there's no book in the image, please type 'No book'."
+    "Read the text on this book spine or cover. "
+    "Return only the title and author in the format 'Title by Author'. "
+    "If you can't identify the author, return just the title. "
+    "If there is no book, respond with 'No book'."
 )
 
 
@@ -27,16 +34,16 @@ class BookPredictor:
 
     output_dir = os.path.abspath("output")
     yolo_initialized = False
-    llm_initialized = False
-    logger = logging.getLogger()
+    logger = logging.getLogger(__name__)
 
     def __init__(self) -> None:
         os.makedirs(f"{self.output_dir}/segmentation", exist_ok=True)
+        self.http_client = httpx.Client(base_url=LLAMA_SERVER_URL, timeout=120.0)
 
     def load_models(self) -> None:
-        """Initialize and load the YOLO and Moondream models."""
+        """Initialize YOLO and verify llama-server is reachable."""
         self._init_yolo()
-        self._init_llm()
+        self._check_llama_server()
 
     def predict(self, image_path: str) -> tuple[str, Generator[str, None, None]] | None:
         """Run segmentation + book recognition on an image."""
@@ -101,27 +108,17 @@ class BookPredictor:
         self.yolo_initialized = True
         self.logger.info("YOLO model initialized.")
 
-    def _init_llm(self) -> None:
-        """Initialize the Moondream v3 model for book recognition."""
-        if self.llm_initialized:
-            return
-
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        dtype = torch.bfloat16 if device == "cuda" else torch.float32
-
-        self.logger.info(f"Loading Moondream v3 from HuggingFace ({device}, {dtype})...")
-        self.moondream = AutoModelForCausalLM.from_pretrained(
-            MOONDREAM_MODEL_ID,
-            trust_remote_code=True,
-            dtype=dtype,
-            device_map={"": device},
-        )
-
-        if device == "cuda":
-            self.moondream.compile()
-
-        self.llm_initialized = True
-        self.logger.info("Moondream v3 model initialized.")
+    def _check_llama_server(self) -> None:
+        """Verify that llama-server is running and reachable."""
+        try:
+            resp = self.http_client.get("/health")
+            resp.raise_for_status()
+            self.logger.info(f"llama-server connected at {LLAMA_SERVER_URL}")
+        except httpx.ConnectError:
+            self.logger.warning(
+                f"llama-server not reachable at {LLAMA_SERVER_URL}. "
+                "Start it with: pdm run llama-server"
+            )
 
     def _segment_and_prepare_books(self, image_path: str) -> tuple[str, list[str]] | None:
         """Segment books with YOLO and return base64 annotated image + cropped book paths."""
@@ -213,15 +210,32 @@ class BookPredictor:
         return cropped_image
 
     def _recognize_book(self, image_path: str) -> str:
-        """Recognize the title and author of a book using Moondream v3."""
-        if not self.llm_initialized:
-            raise ValueError("Moondream model is not initialized, please call load_models() first.")
+        """Recognize the title and author of a book via llama-server."""
+        image_data_url = image_to_base64(image_path)
 
-        image = Image.open(image_path)
-        result = self.moondream.query(image=image, question=BOOK_RECOGNITION_PROMPT, reasoning=False)
-        return result["answer"].strip()
+        resp = self.http_client.post(
+            "/v1/chat/completions",
+            json={
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "image_url", "image_url": {"url": image_data_url}},
+                            {"type": "text", "text": BOOK_RECOGNITION_PROMPT},
+                        ],
+                    }
+                ],
+                "max_tokens": 64,
+                "temperature": 0.1,
+            },
+        )
+        resp.raise_for_status()
 
-    def _rotate_if_spine(self, image: Image.Image, box_data: Boxes, threshold: float = 2.0) -> Image.Image:
+        return resp.json()["choices"][0]["message"]["content"].strip()
+
+    def _rotate_if_spine(
+        self, image: Image.Image, box_data: Boxes, threshold: float = 2.0
+    ) -> Image.Image:
         """Rotate the image if it's likely a book spine based on aspect ratio."""
         x1, y1, x2, y2 = box_data.xyxy[0]
         width, height = x2 - x1, y2 - y1

@@ -26,6 +26,7 @@
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "python.defaultInterpreterPath": "${workspaceFolder}/apps/ai-service/.venv/Scripts/python.exe",
   "ruff.lineLength": 100,
   "mypy-type-checker.args": ["--config-file=${workspaceFolder}/apps/ai-service/pyproject.toml"],
   "VSCodeCounter.exclude": [

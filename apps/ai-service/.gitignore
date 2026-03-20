@@ -1,2 +1,10 @@
 *.pt
 .env
+
+llama-cpp/*
+!llama-cpp/.gitkeep
+
+models/*
+!models/.gitkeep
+
+output/

@@ -2,11 +2,11 @@ import logging
 import sys
 
 COLORS = {
-    "DEBUG": "\033[36m",     # cyan
-    "INFO": "\033[32m",      # green
-    "WARNING": "\033[33m",   # yellow
-    "ERROR": "\033[31m",     # red
-    "CRITICAL": "\033[1;31m",# bold red
+    "DEBUG": "\033[36m",  # cyan
+    "INFO": "\033[32m",  # green
+    "WARNING": "\033[33m",  # yellow
+    "ERROR": "\033[31m",  # red
+    "CRITICAL": "\033[1;31m",  # bold red
 }
 RESET = "\033[0m"
 GRAY = "\033[90m"

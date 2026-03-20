@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "bun --bun next dev --port 4002",
+    "dev": "bun --bun next dev --port 4003",
     "build": "bun --bun next build",
     "start": "bun --bun next start",
     "typegen": "bun --bun next typegen",

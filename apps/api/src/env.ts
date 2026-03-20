@@ -3,12 +3,12 @@ import { t, type Static } from "elysia";
 
 const EnvSchema = t.Object({
   AI_SERVICE_URL: t.Optional(t.String({ default: "http://localhost:4001" })),
-  PORT: t.Optional(t.String({ default: "4000" })),
+  PORT: t.Optional(t.String({ default: "4002" })),
   NODE_ENV: t.Optional(
     t.Union([t.Literal("development"), t.Literal("production"), t.Literal("staging")]),
   ),
   LOG_LEVEL: t.Optional(t.String({ default: "info" })),
-  CORS_ORIGINS: t.Optional(t.String({ default: "http://localhost:4002" })),
+  CORS_ORIGINS: t.Optional(t.String({ default: "http://localhost:4003" })),
 });
 
 export type Env = Static<typeof EnvSchema>;

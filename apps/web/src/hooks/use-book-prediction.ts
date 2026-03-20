@@ -2,7 +2,8 @@
 
 import { type Result } from "@bookscanner/shared";
 import { useRef, useState } from "react";
-import { client } from "@/lib/api";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4002";
 
 interface BookPredictionResult {
   results: string[];
@@ -29,13 +30,17 @@ export function useBookPrediction(): BookPredictionResult {
     abortRef.current = new AbortController();
 
     try {
-      const { response, error: requestError } = await client.api.predict.post(
-        { file },
-        { fetch: { signal: abortRef.current.signal } },
-      );
+      const formData = new FormData();
+      formData.append("file", file);
 
-      if (!response?.ok) {
-        setError(requestError?.value?.message ?? `Server error: ${response?.statusText ?? "No response"}`);
+      const response = await fetch(`${API_URL}/api/predict`, {
+        method: "POST",
+        body: formData,
+        signal: abortRef.current.signal,
+      });
+
+      if (!response.ok) {
+        setError(`Server error: ${response.statusText}`);
         setIsProcessing(false);
         return;
       }

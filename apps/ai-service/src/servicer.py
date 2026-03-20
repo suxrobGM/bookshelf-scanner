@@ -1,13 +1,13 @@
-import os
 import base64
 import logging
+import os
 import tempfile
 from typing import Iterator
 
 import grpc
 
-from .generated.bookscanner.v1 import prediction_pb2, prediction_pb2_grpc
 from .bookscanner_ai import BookPredictor
+from .generated.bookscanner.v1 import prediction_pb2, prediction_pb2_grpc
 
 logger = logging.getLogger(__name__)
 
@@ -76,9 +76,7 @@ class PredictionServicer(prediction_pb2_grpc.PredictionServiceServicer):
 
         except Exception as e:
             logger.error(f"Error during prediction: {e}")
-            yield prediction_pb2.PredictResponse(
-                error=prediction_pb2.ErrorResult(message=str(e))
-            )
+            yield prediction_pb2.PredictResponse(error=prediction_pb2.ErrorResult(message=str(e)))
         finally:
             self.predictor.cleanup()
             if temp_path and os.path.exists(temp_path):
