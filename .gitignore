@@ -162,6 +162,9 @@ cython_debug/
 #.idea/
 
 # Ignore models, since they are too large to be stored in git
+models/*.pt
+models/*.gguf
+models/cache/
 ai/models/*.pt
 ai/models/cache/
 backend/models/*.pt
@@ -170,3 +173,15 @@ backend/models/cache/
 # Ignore output directories
 ai/output/
 backend/output/
+apps/ai-service/output/
+
+# Node
+node_modules/
+.next/
+.turbo/
+dist/
+bun.lockb
+
+# Generated proto stubs (regenerated from proto/ via buf/grpc_tools)
+apps/api/src/generated/
+apps/ai-service/src/generated/

@@ -1,0 +1,31 @@
+{
+  "name": "@bookscanner/web",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "bun --bun next dev --port 4002",
+    "build": "bun --bun next build",
+    "start": "bun --bun next start",
+    "clean": "rm -rf .next .turbo"
+  },
+  "dependencies": {
+    "@bookscanner/shared": "workspace:*",
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^7.3.0",
+    "@mui/material": "^7.3.0",
+    "@mui/material-nextjs": "^7.3.0",
+    "next": "^16.2.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "eslint": "^10.0.0",
+    "eslint-config-next": "^16.2.0",
+    "typescript": "^5.9.3"
+  }
+}

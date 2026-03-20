@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package bookscanner.v1;
+
+// The prediction service for book recognition from bookshelf images.
+service PredictionService {
+  // Server-streaming RPC: client sends an image, server streams back results.
+  // First response contains the segmented image, subsequent responses contain
+  // individual book recognition results.
+  rpc Predict(PredictRequest) returns (stream PredictResponse);
+}
+
+message PredictRequest {
+  // Raw image bytes (PNG, JPEG, etc.)
+  bytes image_data = 1;
+  // Original filename for logging and temp file management
+  string filename = 2;
+}
+
+message PredictResponse {
+  oneof result {
+    SegmentationResult segmentation = 1;
+    BookResult book = 2;
+    ErrorResult error = 3;
+  }
+}
+
+// First message in the stream: the YOLO-segmented image
+message SegmentationResult {
+  // Raw PNG bytes of the annotated/segmented image
+  bytes segmented_image = 1;
+  // Number of books detected in the image
+  int32 book_count = 2;
+}
+
+// Subsequent messages: one per detected book
+message BookResult {
+  // 1-indexed book number
+  int32 book_number = 1;
+  // Original raw text from the model (e.g., "Title by Author")
+  string raw_text = 2;
+}
+
+// Error message
+message ErrorResult {
+  string message = 1;
+}
