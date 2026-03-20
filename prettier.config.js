@@ -14,7 +14,7 @@ const config = {
   jsxSingleQuote: false, // "" for react props, like in html
   bracketSameLine: false, // pretty JSX
   endOfLine: "lf", // 'lf' for linux, 'crlf' for windows, we need to use 'lf' for git,
-  plugins: ["@ianvs/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"],
+  plugins: ["@ianvs/prettier-plugin-sort-imports"],
   importOrder: ["<BUILTIN_MODULES>", "<THIRD_PARTY_MODULES>", "^@/(.*)$", "^[./]"],
   importOrderParserPlugins: ["typescript", "jsx", "decorators-legacy"],
   importOrderTypeScriptVersion: "5.0.0",
@@ -29,12 +29,6 @@ const config = {
           "^@/(.*)$",
           "^[./]",
         ],
-      },
-    },
-    {
-      files: ["*.hbs"],
-      options: {
-        parser: "glimmer",
       },
     },
   ],

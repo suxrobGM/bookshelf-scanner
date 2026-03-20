@@ -1,18 +1,17 @@
 "use client";
 
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
+import {Card, CardContent, CardMedia, Typography, Stack} from "@mui/material";
+import type { ReactElement } from "react";
 
 interface ImagePreviewProps {
   uploadedSrc: string | null;
   segmentedSrc: string | null;
 }
 
-export function ImagePreview({ uploadedSrc, segmentedSrc }: ImagePreviewProps) {
-  if (!uploadedSrc && !segmentedSrc) return null;
+export function ImagePreview(props: ImagePreviewProps): ReactElement {
+  const { uploadedSrc, segmentedSrc } = props;
+
+  if (!uploadedSrc && !segmentedSrc) {return <></>;}
 
   return (
     <Stack direction="row" spacing={2} flexWrap="wrap" justifyContent="center">

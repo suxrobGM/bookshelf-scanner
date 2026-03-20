@@ -1,17 +1,18 @@
 "use client";
 
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
+import type { ReactElement } from "react";
+import { List, ListItem, ListItemText, Paper, Typography } from "@mui/material";
 
 interface ResultsListProps {
   results: string[];
 }
 
-export function ResultsList({ results }: ResultsListProps) {
-  if (results.length === 0) return null;
+export function ResultsList(props: ResultsListProps): ReactElement {
+  const { results } = props;
+
+  if (results.length === 0) {
+    return <></>;
+  }
 
   return (
     <Paper variant="outlined" sx={{ maxHeight: 400, overflow: "auto", width: "100%" }}>

@@ -1,33 +1,28 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
-import Alert from "@mui/material/Alert";
-import LinearProgress from "@mui/material/LinearProgress";
-import { UploadForm } from "./upload-form";
+import { useState, type ReactElement } from "react";
+import { Alert, Container, LinearProgress, Stack, Typography } from "@mui/material";
+import { useBookPrediction } from "@/hooks/use-book-prediction";
 import { ImagePreview } from "./image-preview";
 import { ResultsList } from "./results-list";
-import { useBookPrediction } from "../hooks/use-book-prediction";
+import { UploadForm } from "./upload-form";
 
-export function BookScanner() {
+export function BookScanner(): ReactElement {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadedImageSrc, setUploadedImageSrc] = useState<string | null>(null);
-  const { results, segmentedImage, error, isProcessing, predict, cancel } =
-    useBookPrediction();
+  const { results, segmentedImage, error, isProcessing, predict, cancel } = useBookPrediction();
 
-  const handleFileSelected = useCallback((file: File) => {
+  const handleFileSelected = (file: File) => {
     setSelectedFile(file);
 
     const reader = new FileReader();
     reader.onload = () => setUploadedImageSrc(reader.result as string);
     reader.readAsDataURL(file);
-  }, []);
+  };
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = () => {
     if (selectedFile) predict(selectedFile);
-  }, [selectedFile, predict]);
+  };
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -61,10 +56,7 @@ export function BookScanner() {
 
         <ResultsList results={results} />
 
-        <ImagePreview
-          uploadedSrc={uploadedImageSrc}
-          segmentedSrc={segmentedImage}
-        />
+        <ImagePreview uploadedSrc={uploadedImageSrc} segmentedSrc={segmentedImage} />
       </Stack>
     </Container>
   );

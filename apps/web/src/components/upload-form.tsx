@@ -1,10 +1,9 @@
 "use client";
 
-import { useRef } from "react";
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { useRef, type ReactElement } from "react";
 import CancelIcon from "@mui/icons-material/Cancel";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { Button, Stack } from "@mui/material";
 
 interface UploadFormProps {
   isProcessing: boolean;
@@ -14,13 +13,8 @@ interface UploadFormProps {
   hasFile: boolean;
 }
 
-export function UploadForm({
-  isProcessing,
-  onFileSelected,
-  onSubmit,
-  onCancel,
-  hasFile,
-}: UploadFormProps) {
+export function UploadForm(props: UploadFormProps): ReactElement {
+  const { isProcessing, onFileSelected, onSubmit, onCancel, hasFile } = props;
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,13 +26,7 @@ export function UploadForm({
     <Stack direction="row" spacing={2} alignItems="center">
       <Button variant="outlined" component="label">
         Choose Image
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*"
-          hidden
-          onChange={handleChange}
-        />
+        <input ref={inputRef} type="file" accept="image/*" hidden onChange={handleChange} />
       </Button>
 
       <Button
