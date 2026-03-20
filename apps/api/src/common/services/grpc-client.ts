@@ -4,7 +4,6 @@ import { PredictionService } from "@/generated/bookscanner/v1/prediction_pb";
 
 const transport = createGrpcTransport({
   baseUrl: process.env.AI_SERVICE_URL!,
-  httpVersion: "2",
 });
 
 export const predictionClient = createClient(PredictionService, transport);

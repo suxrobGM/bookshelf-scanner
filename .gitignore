@@ -185,3 +185,5 @@ bun.lockb
 # Generated proto stubs (regenerated from proto/ via buf/grpc_tools)
 apps/api/src/generated/
 apps/ai-service/src/generated/
+
+.claude/settings.local.json

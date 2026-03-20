@@ -1,67 +1,28 @@
-import { Elysia, t } from "elysia";
-import { predictionClient } from "@/common/services/grpc-client";
+import { Elysia } from "elysia";
+import { container } from "@/common/di/container";
+import { PredictBodySchema } from "./predict.schema";
+import { PredictService } from "./predict.service";
 
-export const predictController = new Elysia({ prefix: "/predict" }).post(
+const predictService = container.resolve(PredictService);
+
+export const predictController = new Elysia({ prefix: "/predict", tags: ["Prediction"] }).post(
+  "/",
   async ({ body }) => {
-    const file = body.file;
-    const imageBuffer = new Uint8Array(await file.arrayBuffer());
-
-    const stream = new ReadableStream({
-      async start(controller) {
-        const encoder = new TextEncoder();
-
-        try {
-          for await (const response of predictionClient.predict({
-            imageData: imageBuffer,
-            filename: file.name,
-          })) {
-            let result: { success: boolean; data?: string; error?: string };
-
-            if (response.result.case === "segmentation") {
-              // Convert raw bytes to base64 data URL
-              const b64 = Buffer.from(
-                response.result.value.segmentedImage,
-              ).toString("base64");
-              result = {
-                success: true,
-                data: `data:image/png;base64,${b64}`,
-              };
-            } else if (response.result.case === "book") {
-              result = { success: true, data: response.result.value.rawText };
-            } else if (response.result.case === "error") {
-              result = {
-                success: false,
-                error: response.result.value.message,
-              };
-            } else {
-              continue;
-            }
-
-            controller.enqueue(
-              encoder.encode(JSON.stringify(result) + "\n"),
-            );
-          }
-        } catch (err) {
-          const errResult = {
-            success: false,
-            error: err instanceof Error ? err.message : String(err),
-          };
-          controller.enqueue(
-            encoder.encode(JSON.stringify(errResult) + "\n"),
-          );
-        } finally {
-          controller.close();
-        }
-      },
-    });
+    const imageBuffer = new Uint8Array(await body.file.arrayBuffer());
+    const stream = predictService.createStream(imageBuffer, body.file.name);
 
     return new Response(stream, {
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/x-ndjson" },
     });
   },
   {
-    body: t.Object({
-      file: t.File(),
-    }),
+    body: PredictBodySchema,
+    detail: {
+      summary: "Predict books from bookshelf image",
+      description:
+        "Upload a bookshelf image to segment individual books and recognize their titles. " +
+        "Returns a newline-delimited JSON stream: first chunk is the segmented image (base64), " +
+        "followed by one chunk per recognized book.",
+    },
   },
 );

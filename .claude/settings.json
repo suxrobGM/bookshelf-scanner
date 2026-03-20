@@ -1,0 +1,31 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -Command \"$input = $Input | Out-String; $json = $input | ConvertFrom-Json; $file = $json.tool_input.file_path; if ($file) { bunx prettier --write $file 2>$null }\""
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(bun run:*)",
+      "Bash(bun add:*)",
+      "Bash(bun remove:*)",
+      "Bash(bun install)",
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(dir:*)",
+
+      "mcp__plugin_playwright_playwright__browser_*",
+      "mcp__plugin_context7_context7__*"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
