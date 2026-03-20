@@ -29,13 +29,13 @@ export function useBookPrediction(): BookPredictionResult {
     abortRef.current = new AbortController();
 
     try {
-      const { response } = await client.api.predict.post(
+      const { response, error: requestError } = await client.api.predict.post(
         { file },
         { fetch: { signal: abortRef.current.signal } },
       );
 
-      if (!response.ok) {
-        setError(`Server error: ${response.statusText}`);
+      if (!response?.ok) {
+        setError(requestError?.value?.message ?? `Server error: ${response?.statusText ?? "No response"}`);
         setIsProcessing(false);
         return;
       }

@@ -8,6 +8,7 @@ const EnvSchema = t.Object({
     t.Union([t.Literal("development"), t.Literal("production"), t.Literal("staging")]),
   ),
   LOG_LEVEL: t.Optional(t.String({ default: "info" })),
+  CORS_ORIGINS: t.Optional(t.String({ default: "http://localhost:4002" })),
 });
 
 export type Env = Static<typeof EnvSchema>;

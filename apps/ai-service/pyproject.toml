@@ -30,6 +30,9 @@ install-pytorch-cpu = { shell = "pdm config pypi.pytorch.url https://download.py
 install-pytorch-cu128 = { shell = "pdm config pypi.pytorch.url https://download.pytorch.org/whl/cu128 && pdm install -G cu128" }
 install-pytorch-cu130 = { shell = "pdm config pypi.pytorch.url https://download.pytorch.org/whl/cu130 && pdm install -G cu130" }
 
+[tool.mypy]
+ignore_missing_imports = true
+
 [tool.pdm]
 distribution = false
 

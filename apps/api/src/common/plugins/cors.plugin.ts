@@ -6,7 +6,7 @@ import { Elysia } from "elysia";
  */
 export const corsPlugin = new Elysia({ name: "cors" }).use(
   cors({
-    origin: process.env.CORS_ORIGINS?.split(",") ?? ["http://localhost:4001"],
+    origin: process.env.CORS_ORIGINS?.split(",") ?? ["http://localhost:4002"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
   }),

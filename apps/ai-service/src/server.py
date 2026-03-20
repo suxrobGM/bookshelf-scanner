@@ -1,14 +1,16 @@
 import logging
+
 import grpc
 from concurrent import futures
 
+from .logger import setup_logging
 from .generated.bookscanner.v1 import prediction_pb2_grpc
 from .servicer import PredictionServicer
 
 _PORT = 4001
 _MAX_MESSAGE_SIZE = 20 * 1024 * 1024  # 20MB
 
-logging.basicConfig(level=logging.INFO)
+setup_logging()
 logger = logging.getLogger(__name__)
 
 
